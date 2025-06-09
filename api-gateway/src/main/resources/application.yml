@@ -1,0 +1,27 @@
+server:
+  port: 8082  # Puerto en el que corre el API Gateway
+
+spring:
+  application:
+    name: api-gateway  # Nombre del servicio (registrado en Eureka)
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Activa el descubrimiento automático de rutas desde Eureka
+          lower-case-service-id: true  # Convierte los IDs de servicios a minúsculas
+      routes:
+        - id: xml-deserializer-route  # Identificador interno de esta ruta
+          uri: lb://xml-deserializer  # Dirección lógica del microservicio registrado en Eureka
+          predicates:
+            - Path=/api/transaction/receive
+          filters:
+            - StripPrefix=2  # Elimina '/api/transaction' para que quede '/receive'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka  # Dirección del servidor Eureka
+  instance:
+    ip-address: true  # Muestra la IP real en el panel de Eureka
