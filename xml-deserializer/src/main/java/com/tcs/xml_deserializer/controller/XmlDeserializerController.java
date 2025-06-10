@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/transaction")
+@RequestMapping("/receive")
 @Slf4j
 public class XmlDeserializerController {
 
@@ -23,14 +23,18 @@ public class XmlDeserializerController {
         this.deserializerService = deserializerService;
     }
 
-    @PostMapping("/receive")
+    @PostMapping
     public ResponseEntity<String> receiveXml(@RequestBody String rawXml){
-        try{
+        log.info("✅ XML recibido por xml-deserializer:");
+        log.info(rawXml);  // Esto mostrará el XML crudo recibido
+
+        try {
             Transaction transaction = deserializerService.deserializeXml(rawXml);
-            log.info("Transaction Received: " + transaction.getTransactionId());
-            return ResponseEntity.ok("XML DESERIALIZED SUCCESFULL");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("ERROR WAS OCURRED TRYING TO DESERIALIZE");
+            log.info("🧾 Transacción procesada: ID = {}", transaction.getTransactionId());
+            return ResponseEntity.ok("XML DESERIALIZED SUCCESSFULLY");
+        } catch (Exception e) {
+            log.error("❌ Error al deserializar XML: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("ERROR WHILE DESERIALIZING XML");
         }
     }
 }

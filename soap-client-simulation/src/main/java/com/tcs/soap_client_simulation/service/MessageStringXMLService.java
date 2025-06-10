@@ -36,6 +36,7 @@ public class MessageStringXMLService {
         // Enviar al receptor en puerto 8083
         String endpoint = "http://localhost:8082/api/transaction/receive";
 
+
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
             logger.info("Respuesta del receptor XML: {}", response.getBody());

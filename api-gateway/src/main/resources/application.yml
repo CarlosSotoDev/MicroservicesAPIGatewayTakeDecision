@@ -3,25 +3,27 @@ server:
 
 spring:
   application:
-    name: api-gateway  # Nombre del servicio (registrado en Eureka)
+    name: api-gateway  # Nombre del servicio registrado en Eureka
+  main:
+    web-application-type: reactive  # Necesario para WebFlux / Gateway
 
   cloud:
     gateway:
       discovery:
         locator:
-          enabled: true  # Activa el descubrimiento automático de rutas desde Eureka
-          lower-case-service-id: true  # Convierte los IDs de servicios a minúsculas
-      routes:
-        - id: xml-deserializer-route  # Identificador interno de esta ruta
-          uri: lb://xml-deserializer  # Dirección lógica del microservicio registrado en Eureka
+          enabled: true  # Activa descubrimiento automático de rutas por nombre de servicio
+          lower-case-service-id: true  # Usa nombres en minúscula desde Eureka
+      routes:  # ✅ CORRECTO: routes está dentro de gateway
+        - id: xml-deserializer-route
+          uri: lb://xml-deserializer
           predicates:
             - Path=/api/transaction/receive
           filters:
-            - StripPrefix=2  # Elimina '/api/transaction' para que quede '/receive'
+            - StripPrefix=2  # Elimina /api/transaction → /receive
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka  # Dirección del servidor Eureka
+      defaultZone: http://localhost:8761/eureka  # URL del servidor Eureka
   instance:
-    ip-address: true  # Muestra la IP real en el panel de Eureka
+    prefer-ip-address: true  # Muestra IP real
